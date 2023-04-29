@@ -22,7 +22,7 @@ total_error: custom error term to measure how consistent the model is and how fa
 """
 import numpy as np
 import cohere
-import nlp.use_llm as llm
+import use_llm as llm
 # Replace this with the output from whisper or OCR model
 input_text = "My first travel to the site, which required a 1.5 hour drive, there was some traffic. I conducted a safety inspection before beginning to work by looking at the three turbines from the ground. No issues found. Then started inspection on turbine number 456. While inspecting the turbine I found damages on the blades. They were a little rusty. Oh no. I mean, they were mainly damaged. I performed a superficial repair using resin on the blade. Afterwards I checked the gearbox and lubrication on number 789. There was some leak. It got my clothes all dirty"
 

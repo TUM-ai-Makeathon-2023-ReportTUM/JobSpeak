@@ -40,8 +40,8 @@ def process_case_A(input_text, date=None):
         length="long",
         format="bullets",
         model="summarize-xlarge",
-        extractiveness="high",
-        temperature=0.3, # between 0 and 5, between 0 and 1 gives good results, high values cause more "creative" answers
+        extractiveness="low",
+        temperature=0, # between 0 and 5, between 0 and 1 gives good results, high values cause more "creative" answers
         additional_command="Use formal and technical language, use passive tense and focus only on objective facts.",
     )
 
@@ -57,8 +57,8 @@ def process_case_A(input_text, date=None):
         length="long",
         format="paragraph",
         model="summarize-xlarge",
-        extractiveness="high",
-        temperature=0.3, # between 0 and 5, between 0 and 1 gives good results, high values cause more "creative" answers
+        extractiveness="low",
+        temperature=0, # between 0 and 5, between 0 and 1 gives good results, high values cause more "creative" answers
         additional_command="Use formal and technical language, use passive tense and focus only on objective facts."
     )
 
@@ -122,8 +122,8 @@ def process_case_B(input_list, date=None):
         length="long",
         format="paragraph",
         model="summarize-xlarge",
-        extractiveness="high",
-        temperature=0.3, # between 0 and 5, between 0 and 1 gives good results, high values cause more "creative" answers
+        extractiveness="low",
+        temperature=0, # between 0 and 5, between 0 and 1 gives good results, high values cause more "creative" answers
         additional_command="Use formal and technical language, use passive tense and focus only on objective facts."
     )
 
