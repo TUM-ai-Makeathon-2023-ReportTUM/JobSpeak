@@ -19,7 +19,7 @@ def dict_to_pdf(data_dict):
                           - 'name' (str): The name of the person.
                           - 'title' (str): Title of the task done.
                           - 'task_desc' (str): description of task. Preferably just one line
-                          - 'task_summary' (str): bullet points seperated using <br>.
+                          - 'task_summary' (list of str): each entry in the list will be a new bullet point
                           - 'faith_score' (int): faith score calculated if you wanna change the thresholds edit in this py file.
 
     Returns:
@@ -40,7 +40,7 @@ def dict_to_pdf(data_dict):
     period = ""
     name = data_dict['name']
     task_description = data_dict["task_desc"]
-    reason_and_solution = data_dict["task_summary"].split("<br>")
+    reason_and_solution = data_dict["task_summary"]
     service_title = data_dict["title"]
     faith_score = data_dict["faith"]
 
