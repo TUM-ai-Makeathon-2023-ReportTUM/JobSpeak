@@ -35,4 +35,6 @@ RUN pip install --no-cache-dir torch==1.10.0+cu113 torchvision==0.11.0+cu113 tor
 # Whisper stuff
 RUN pip install git+https://github.com/openai/whisper.git 
 
+RUN pip install azure-cognitiveservices-vision-computervision
+
 WORKDIR /usr/src/app
