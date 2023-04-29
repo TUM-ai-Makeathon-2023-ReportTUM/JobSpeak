@@ -10,3 +10,12 @@ conda create -n JobSpeak Python=3.10
 conda activate JobSpeak
 pip install streamlit --upgrade
 ```
+
+
+## Running
+
+From the root folder run:
+
+```bash
+streamlit run Home.py
+```
