@@ -1,33 +1,25 @@
 import streamlit as st
 import time
 import numpy as np
+import pandas as pd
 
 st.set_page_config(page_title="Supervisor View", page_icon="📈")
 
 st.markdown("# Supervisor View")
 st.sidebar.header("Supervisor View")
-st.write(
-    """This demo illustrates a combination of plotting and animation with
-Streamlit. We're generating a bunch of random numbers in a loop for around
-5 seconds. Enjoy!"""
-)
 
-progress_bar = st.sidebar.progress(0)
-status_text = st.sidebar.empty()
-last_rows = np.random.randn(1, 1)
-chart = st.line_chart(last_rows)
+# Define your data
+user_data = {
+    'Turbine Repair': {'worker': 'Bob Baumeister', 'worker-id': '0152332', 'date':"29.04.2023"},
+    'Turbine Inspection': {'worker': 'Dora Entdecker', 'worker-id': '0314533', 'date':"24.04.2023"},
+    # Add as many users as you need...
+}
 
-for i in range(1, 101):
-    new_rows = last_rows[-1, :] + np.random.randn(5, 1).cumsum(axis=0)
-    status_text.text("%i%% Complete" % i)
-    chart.add_rows(new_rows)
-    progress_bar.progress(i)
-    last_rows = new_rows
-    time.sleep(0.05)
+# Display the data
+for name, info in user_data.items():
+    # Display information
+    st.write(f'Task: {name} || Responsible: {info["worker"]} || Id: {info["worker-id"]} || Date: {info["date"]}')
 
-progress_bar.empty()
-
-# Streamlit widgets automatically run the script from top to bottom. Since
-# this button is not connected to any other logic, it just causes a plain
-# rerun.
-st.button("Re-run")
+    # Add a button for additional info
+    if st.button(f'Create report for {name}'):
+        print("Call some function...") # TODO need to add a method call to generate or display the pdf
