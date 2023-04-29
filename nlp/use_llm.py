@@ -98,7 +98,7 @@ def process_case_A(input_text, date=None):
     print("===========")
     print(f"Summarized text: {summary_report}")
     print("===========")
-    print(f"Summarized bulletpoints: {summary_bullets.summary}")
+    print(f"Summarized bulletpoints:\n{summary_bullets.summary}")
     print("===========")
     print(f"Consistency error: {err_consistency}, Faithfulness error:  {err_faith}, Total error: {error}")
 
