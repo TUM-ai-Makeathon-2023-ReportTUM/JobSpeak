@@ -3,6 +3,7 @@ import time
 import numpy as np
 from dataclasses import dataclass
 import streamlit as st
+import wave
 
 # from 
 # https://github.com/Joooohan/audio-recorder-streamlit
@@ -22,13 +23,12 @@ from streamlit_card import card
 from streamlit_extras.let_it_rain import rain
 
 
-
-
-
 _VIEW_START = "start"
 _VIEW_WRITTEN_INPUT = "report_input"
 _VIEW_SPEECH_INPUT = "report_speech_input"
 _VIEW_REPORT_SUBMISSION = "report_submission"
+
+SPEECH_WAV_FILENAME = "worker_report_voice_recording.wav"
 
 # STYLING
 LARGE_SEP_N_LINES = 5
@@ -41,10 +41,19 @@ if 'entered_task_keys_and_text' not in st.session_state:
     st.session_state.entered_task_keys_and_text = {}
 if 'given_report_name' not in st.session_state:
     st.session_state.given_report_name = None
+if 'submission_success' not in st.session_state:
+    st.session_state.submission_success = False
+if 'transcribed_text' not in st.session_state:
+    st.session_state.transcribed_text = ""
 
 # Helper functions
 def set_view_start():
     st.session_state.displayed_elements = _VIEW_START
+    # Clear inputs and reset
+    st.session_state.entered_task_keys_and_text = {}
+    st.session_state.transcribed_text = ""
+    st.session_state.submission_success = False
+    
 def set_view_written_input():
     st.session_state.displayed_elements = _VIEW_WRITTEN_INPUT
 
@@ -53,6 +62,13 @@ def set_view_speech_input():
     
 def set_view_report_submission():
     st.session_state.displayed_elements = _VIEW_REPORT_SUBMISSION
+    
+def is_submission_successful():
+    return st.session_state.submission_success
+
+def set_submission_successful(flag):
+    assert isinstance(flag, bool)
+    st.session_state.submission_success = flag
 
 def get_entered_task_keys_and_text():
     """
@@ -78,8 +94,15 @@ def get_entered_task_keys_and_text():
 
 def add_task_key_and_text(key, text):
     st.session_state.entered_task_keys_and_text[key] = text
+    
+def get_transcribed_text():
+    return st.session_state.transcribed_text
+    
+# Helper functions for rendering pages
 
 def show_start_elements():
+    """The start page"""
+    
     st.markdown("## Begin a new Report")
     st.write(
         """some text about this blablabla"""
@@ -103,15 +126,19 @@ def show_start_elements():
 
 
 def show_written_input_elements():
+    """The edit page for written text"""
     
     st.markdown(f"## Writing Report: {st.session_state.given_report_name}")
-    st.markdown("### Add Your Tasks")
+    st.markdown("### What did you work on today?")
     
     add_vertical_space(LARGE_SEP_N_LINES)
     
     # Create List of task boxes
     d = get_entered_task_keys_and_text()
+    next_disabled = True
     for idx, (task_key, task_text) in enumerate(d.items()):
+        if task_text != '':
+            next_disabled = False
         col1, col2 = st.columns([1, 6])
         with col1:
             st.write(f"No. {idx+1}")
@@ -123,29 +150,29 @@ def show_written_input_elements():
 
     col1, col2 = st.columns(2)
     with col1:
-        st.button("🔙 Back to Start", on_click=set_view_start)
+        st.button("🔙 Back", on_click=set_view_start)
     with col2:
-        st.button("✅ Review", on_click=set_view_report_submission)
+        st.button("Next ✅", on_click=set_view_report_submission, disabled=next_disabled)
 
     
 def show_speech_input_elements():
+    """The edit page for speech"""
+    
     st.markdown(f"## Report: {st.session_state.given_report_name}")
     st.markdown("### What did you work on today?")
     add_vertical_space(LARGE_SEP_N_LINES)
 
-    
     def record():
         audio_bytes = audio_recorder()
         if audio_bytes:
             st.audio(audio_bytes)
         return audio_bytes
 
-    audio_data = record()
+    # Create Microphone
+    # audio_data = record()
+    next_disabled = True
     
-    add_vertical_space(LARGE_SEP_N_LINES)
-    
-    
-    # wav_audio_data = st_audiorec()
+    audio_data = st_audiorec()
     # if wav_audio_data is not None:
     #     # display audio data as received on the backend
     #     st.audio(wav_audio_data, format='audio/wav')
@@ -159,31 +186,79 @@ def show_speech_input_elements():
     # INFO: by calling the function an instance of the audio recorder is created
     # INFO: once a recording is completed, audio data will be saved to wav_audio_data
     
+    if audio_data is not None:
+        st.audio(audio_data, format='audio/wav')
+        # Save as .wav file
+        if os.path.exists(SPEECH_WAV_FILENAME):
+            os.remove(SPEECH_WAV_FILENAME)
+        with open(SPEECH_WAV_FILENAME, mode='bx') as f:
+            f.write(audio_data)
+
+        with wave.open(SPEECH_WAV_FILENAME, 'r') as wav_file:
+            frames = wav_file.getnframes()
+            rate = wav_file.getframerate()
+            duration = frames / float(rate)
+            if duration > 1: # in seconds
+                next_disabled = False
+    
+    add_vertical_space(LARGE_SEP_N_LINES)
+
+    
     col1, col2 = st.columns(2)
     with col1:
-        st.button("🔙 Back to Start", on_click=set_view_start)
+        st.button("🔙 Back", on_click=set_view_start)
     with col2:
-        st.button("✅ Review", on_click=set_view_report_submission)
+        st.button("Next ✅", on_click=set_view_report_submission, disabled=next_disabled)
     
 def show_report_submission_elements():
-    st.markdown(f"## Review Report: {st.session_state.given_report_name}")
+    """The Submission page"""
+    
+    st.markdown(f"## Submit Report: {st.session_state.given_report_name}")
+    
+    add_vertical_space(LARGE_SEP_N_LINES)
+    
+    # Display a list of bullet points        
+    markdown_str = ""
+    is_transcribed = False
+    if get_transcribed_text():
+        is_transcribed = True
+        markdown_str = get_transcribed_text()
+    else:
+        for k, v in get_entered_task_keys_and_text().items():
+            if v != '':
+                markdown_str += f"- {v}\n"
+            
+    st.markdown(markdown_str)
+    
+    add_vertical_space(LARGE_SEP_N_LINES)
+    
+    # Display Cancel, Edit and Submit buttons
     col1, col2, col3 = st.columns(3)
     
-    rain(
-        emoji="🎈",
-        font_size=54,
-        falling_speed=5,
-        animation_length="infinite",
-    )   
     with col1:
-        st.button("Cancel", on_click=set_view_start)
+        st.button("❌ Cancel", on_click=set_view_start, disabled=is_submission_successful())
     with col2:
-        st.button("Edit", on_click=set_view_written_input)
+        on_click_func = show_speech_input_elements if is_transcribed else set_view_written_input
+        st.button("Edit", on_click=set_view_written_input, disabled=is_submission_successful())
     with col3:
-        st.button("Submit", on_click=set_view_report_submission)
+        def on_click_submit():
+            # with st.spinner('Wait for it...'):
+            #     time.sleep(5)
+            rain(
+                emoji="🎉",
+                font_size=54,
+                falling_speed=5,
+                animation_length=5,#"infinite",
+            )
+            set_submission_successful(True)
+            
+        st.button("Submit ✅", on_click=on_click_submit, disabled=is_submission_successful())
+    
+    if is_submission_successful():
+        st.button("Go Back 🏠", on_click=set_view_start)
 
 
-### RENDERING CODE
+### RENDERING ALL CODE
 
 # Page Setup
 st.set_page_config(page_title="Worker View", page_icon="👷")
