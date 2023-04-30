@@ -36,6 +36,6 @@ for name in db.get_all_users():
         # print(data_dict)
 
         pdf = dict_to_pdf(data_dict)
-        with open("pdfs/output.pdf", 'rb') as file:
+        with open("../pdfs/output.pdf", 'rb') as file:
             contents = file.read()
         st.download_button(label="Download Document", data = contents, file_name=report.report_name)# TODO need to add a method call to generate or display the pdf
