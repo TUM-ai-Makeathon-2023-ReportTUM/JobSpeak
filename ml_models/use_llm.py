@@ -25,6 +25,7 @@ import cohere
 import sys
 
 sys.path.append("..")
+sys.path.append(".")
 from env import *
 
 co = cohere.Client(COHERE_KEY) # pls don't steal my API key
@@ -112,8 +113,8 @@ def process_case_B(input_list, date=None):
     # Convert list of strings to a paragraph
     input_text = ""
 
-    for bullet in range(len(input_list)):
-        input_text = input_text + bullet + ". " # Adding period just for punctuation, can remove it later TODO
+    for bullet_idx in range(len(input_list)):
+        input_text = input_text + input_list[bullet_idx] + ". " # Adding period just for punctuation, can remove it later TODO
 
     bullet_list = input_list # Return the input list of strings
 
