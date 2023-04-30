@@ -45,6 +45,7 @@ IMG_JPG_FILENAME = "worker_report_image.jpg"
 
 # STYLING
 LARGE_SEP_N_LINES = 5
+SMALL_SEP_N_LINES = 2
 
 # Initialize the Session State
 # session_state = st.session_state
@@ -188,7 +189,13 @@ def show_speech_input_elements():
     st.markdown("### What did you work on today?")
     st.sidebar.success("Enter your achievements.")
     
-    add_vertical_space(LARGE_SEP_N_LINES)
+    add_vertical_space(SMALL_SEP_N_LINES)
+    
+    st.markdown("**Hints**:")
+    st.markdown("- If recording does not work the first time, press 'Stop' and then press 'Start' again.")
+    st.markdown("- Unfortunately our Voice2text model only works with audio <30sec. and longer messages work better.")
+    
+    add_vertical_space(SMALL_SEP_N_LINES)
 
     def record():
         audio_bytes = audio_recorder()
