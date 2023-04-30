@@ -72,8 +72,7 @@ def dict_to_pdf(data_dict):
             reason_description = reason_and_solution
         )
     
-    try:
-        pdfkit.from_string(html, "output.pdf")
-    except Exception:
-        pass
-    return pdf_read.PdfReader("output.pdf")
+    # try:
+    pdfkit.from_string(html, "pdfs/output.pdf")
+    # except Exception:
+        # pass

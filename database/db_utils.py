@@ -60,8 +60,8 @@ def test_functions():
     ## Create 2 reports per user
     user_ids = [1,2,3]
     for user_id in user_ids:
-        create_report("Report1", user_id, "This is a very nice report", "2021-01-01", "img_path1", score = 1)
-        create_report("Report2", user_id, "This is another very nice report", "2021-01-02", "img_path2", score =1)
+        create_report("Report1", user_id, ["This is a very nice report"], "2021-01-01", "img_path1", score = 1)
+        create_report("Report2", user_id, ["This is another very nice report"], "2021-01-02", "img_path2", score =10)
 
     ## Get all reports for a given user
     reports = get_reports(1)
