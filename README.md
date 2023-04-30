@@ -21,3 +21,5 @@ From the root folder run:
 ```bash
 streamlit run Home.py
 ```
+
+Using the APIs requires adding all keys in `env.py`.

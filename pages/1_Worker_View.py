@@ -4,6 +4,7 @@ import numpy as np
 from dataclasses import dataclass
 import streamlit as st
 import wave
+import datetime
 
 # from 
 # https://github.com/Joooohan/audio-recorder-streamlit
@@ -22,13 +23,22 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 from streamlit_card import card
 from streamlit_extras.let_it_rain import rain
 
+from ml_models.whisper_voice2text import query_hf
+from ml_models.use_llm import process_case_A, process_case_B
+# from ml_models.ocr import query_ocr
+
+from database.db_utils import create_report
+from PIL import Image
+
 
 _VIEW_START = "start"
 _VIEW_WRITTEN_INPUT = "report_input"
 _VIEW_SPEECH_INPUT = "report_speech_input"
+_VIEW_CAMERA_INPUT = "report_camera_input"
 _VIEW_REPORT_SUBMISSION = "report_submission"
 
 SPEECH_WAV_FILENAME = "worker_report_voice_recording.wav"
+IMG_JPG_FILENAME = "worker_report_image.jpg"
 
 # STYLING
 LARGE_SEP_N_LINES = 5
@@ -59,6 +69,9 @@ def set_view_written_input():
 
 def set_view_speech_input():
     st.session_state.displayed_elements = _VIEW_SPEECH_INPUT
+
+def set_view_camera_input():
+    st.session_state.displayed_elements = _VIEW_CAMERA_INPUT
     
 def set_view_report_submission():
     st.session_state.displayed_elements = _VIEW_REPORT_SUBMISSION
@@ -97,6 +110,13 @@ def add_task_key_and_text(key, text):
     
 def get_transcribed_text():
     return st.session_state.transcribed_text
+
+def set_transcribed_text(text):
+    st.session_state.transcribed_text = text
+    
+def get_given_report_name():
+    return st.session_state.given_report_name
+    
     
 # Helper functions for rendering pages
 
@@ -104,9 +124,11 @@ def show_start_elements():
     """The start page"""
     
     st.markdown("## Begin a new Report")
-    st.write(
-        """some text about this blablabla"""
-    )
+    # st.write(
+    #     """"""
+    # )
+    st.sidebar.success("Begin your report.")
+    
     st.text_input("Report name", placeholder="Give the report a name...", key="report_name_text_field")
     
     enabled = (
@@ -122,7 +144,7 @@ def show_start_elements():
     with col2:
         st.button("🗣️ By Speaking", on_click=set_view_speech_input, disabled=not enabled)
     with col3:
-        st.button("📝 By Photo", on_click=lambda: None, disabled=not enabled)
+        st.button("📸 By Photo", on_click=set_view_camera_input, disabled=not enabled)
 
 
 def show_written_input_elements():
@@ -130,6 +152,7 @@ def show_written_input_elements():
     
     st.markdown(f"## Writing Report: {st.session_state.given_report_name}")
     st.markdown("### What did you work on today?")
+    st.sidebar.success("Enter your achievements.")
     
     add_vertical_space(LARGE_SEP_N_LINES)
     
@@ -160,6 +183,8 @@ def show_speech_input_elements():
     
     st.markdown(f"## Report: {st.session_state.given_report_name}")
     st.markdown("### What did you work on today?")
+    st.sidebar.success("Enter your achievements.")
+    
     add_vertical_space(LARGE_SEP_N_LINES)
 
     def record():
@@ -199,21 +224,69 @@ def show_speech_input_elements():
             rate = wav_file.getframerate()
             duration = frames / float(rate)
             if duration > 1: # in seconds
-                next_disabled = False
-    
+                # Pass file to speech2text model
+                with st.spinner('Running Voice2Text. Please wait...'):
+                    response = query_hf(SPEECH_WAV_FILENAME)
+                    try:
+                        set_transcribed_text(response["text"])
+                        next_disabled = False
+                    except KeyError:
+                        st.sidebar.error(f"Voice2Text failed: {response}.")
+                    
     add_vertical_space(LARGE_SEP_N_LINES)
 
+    col1, col2 = st.columns(2)
+    with col1:
+        st.button("🔙 Back", on_click=set_view_start)
+    with col2:
+        st.button("Next ✅", on_click=set_view_report_submission, disabled=next_disabled)
+        
+
+def show_view_camera_input():
+    """Input page from captured image."""
     
+    st.markdown(f"## Report: {st.session_state.given_report_name}")
+    st.markdown("### What did you work on today?")
+    st.sidebar.success("Upload an image of handwritten notes.")
+    
+    add_vertical_space(LARGE_SEP_N_LINES)
+    
+    next_disabled = True
+    uploaded_file = st.file_uploader("Supported types: png, jpg, jpeg", type=["png", "jpg", "jpeg"])
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        if os.path.exists(IMG_JPG_FILENAME):
+            os.remove(IMG_JPG_FILENAME)
+        image.save(IMG_JPG_FILENAME)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown('<p style="text-align: center;">Before</p>',unsafe_allow_html=True)
+            st.image(image,width=300) 
+        with col2:
+            with st.spinner('Running Img2Text. Please wait...'):
+                try:
+                    result_text, bboxes = query_ocr(IMG_JPG_FILENAME)
+                    set_transcribed_text(result_text)
+                    next_disabled = False
+                except Exception as e:
+                    st.sidebar.error(f"Img2Text failed: {e}.")
+            st.text_area(result_text) 
+        
+    add_vertical_space(LARGE_SEP_N_LINES)
+
     col1, col2 = st.columns(2)
     with col1:
         st.button("🔙 Back", on_click=set_view_start)
     with col2:
         st.button("Next ✅", on_click=set_view_report_submission, disabled=next_disabled)
     
+      
 def show_report_submission_elements():
     """The Submission page"""
     
     st.markdown(f"## Submit Report: {st.session_state.given_report_name}")
+    st.sidebar.success("Submit your report.")
     
     add_vertical_space(LARGE_SEP_N_LINES)
     
@@ -238,12 +311,43 @@ def show_report_submission_elements():
     with col1:
         st.button("❌ Cancel", on_click=set_view_start, disabled=is_submission_successful())
     with col2:
-        on_click_func = show_speech_input_elements if is_transcribed else set_view_written_input
-        st.button("Edit", on_click=set_view_written_input, disabled=is_submission_successful())
+        if is_transcribed:
+            on_click_func = show_speech_input_elements
+            button_name = "Try Again"
+        else:
+            on_click_func = set_view_written_input
+            button_name = "Edit"
+        st.button(button_name, on_click=on_click_func, disabled=is_submission_successful())
     with col3:
         def on_click_submit():
-            # with st.spinner('Wait for it...'):
-            #     time.sleep(5)
+            with st.spinner('Running Text2Text. Please wait...'):
+                success = False
+                # If we have free text
+                if get_transcribed_text():
+                    try:
+                        results_dict = process_case_A(get_transcribed_text())
+                        success = True
+                    except Exception as e:
+                        st.sidebar.error(f"Process A Failed: {e}.")
+                else:
+                    # If we have a list
+                    task_list = [v for k, v in get_entered_task_keys_and_text().items() if v != '']
+                    try:
+                        results_dict = process_case_B(task_list)
+                        success = True
+                    except Exception as e:
+                        st.sidebar.error(f"Process B Failed: {e}.")
+
+                # Write results_dict to DB
+                if success:
+                    create_report(
+                        report_name=get_given_report_name(),
+                        user_id="42",
+                        summary=results_dict["summary_report"],
+                        date=datetime.datetime.now().ctime(),
+                        img_path="",
+                    )
+                
             rain(
                 emoji="🎉",
                 font_size=54,
@@ -271,6 +375,8 @@ elif st.session_state.displayed_elements == _VIEW_WRITTEN_INPUT:
     show_written_input_elements()
 elif st.session_state.displayed_elements == _VIEW_SPEECH_INPUT:
     show_speech_input_elements()
+elif st.session_state.displayed_elements == _VIEW_CAMERA_INPUT:
+    show_view_camera_input()
 elif st.session_state.displayed_elements == _VIEW_REPORT_SUBMISSION:
     show_report_submission_elements()
 

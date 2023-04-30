@@ -1,8 +1,8 @@
-from database import engine, Base, SessionLocal
+from database.database import engine, Base, SessionLocal
 from sqlalchemy import create_engine, MetaData, Table, Integer, String, Column, DateTime, ForeignKey, func
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from models import User, Report
+from database.models import User, Report
 from typing import List
 Base.metadata.create_all(bind=engine)
 

@@ -1,3 +1,6 @@
 streamlit
+streamlit-extras
+st-clickable-images
+azure
 cohere
 sqlalchemy

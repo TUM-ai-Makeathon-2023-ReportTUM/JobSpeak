@@ -23,7 +23,7 @@ st.sidebar.success("Choose your role.")
 
 st.markdown(
     """
-    Choose your role.
+    ## Choose your role:
 """
 )
 
@@ -38,7 +38,7 @@ clicked = clickable_images(
     images,
     titles=[f"Image #{str(i)}" for i in range(5)],
     div_style={"display": "flex", "justify-content": "center", "flex-wrap": "wrap"},
-    img_style={"margin": "10px", "height": "200px", "border-radius": "10px"},
+    img_style={"margin": "10px", "height": "300px", "border-radius": "10px"},
 )
 
 if clicked == 0:
