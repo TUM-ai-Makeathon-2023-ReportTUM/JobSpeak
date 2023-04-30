@@ -1,4 +1,5 @@
 import pdfkit
+import pypdf as pdf_read
 from datetime import date
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -71,4 +72,8 @@ def dict_to_pdf(data_dict):
             reason_description = reason_and_solution
         )
     
-    return pdfkit.from_string(html, "output.pdf")
+    try:
+        pdfkit.from_string(html, "output.pdf")
+    except Exception:
+        pass
+    return pdf_read.PdfReader("output.pdf")
