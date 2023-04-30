@@ -10,7 +10,7 @@ st.set_page_config(page_title="Supervisor View", page_icon="📈")
 st.markdown("# Supervisor View")
 st.sidebar.header("Supervisor View")
 
-db.test_functions()
+# db.test_functions()
 
 # Define your data
 user_data = {
@@ -26,8 +26,6 @@ for name in db.get_all_users():
     if name not in unique_user:
         st.markdown(f'**Worker:  {name.name}**')
         unique_user.append(name.name)
-    else:
-        continue
     
     for report in db.get_reports(name.id):
         st.write(f'Task: {report.report_name} || Id: {name.id} || Date: {report.date}')

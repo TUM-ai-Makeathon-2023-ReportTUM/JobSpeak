@@ -54,7 +54,8 @@ def process_case_A(input_text, date=None):
     # Processing the generated bulletpoints
     summary_str = summary_bullets.summary
     summary_str = summary_str.replace("-","") # remove bullet point bullets
-    bullet_list = summary_str.split("\n") # turn into list of strings for nice processing in the app
+    # bullet_list = summary_str.split("\n") # turn into list of strings for nice processing in the app
+    bullet_list = summary_str
     summary_str = summary_str.replace("\n", "") # remove new lines
 
     # Get report format summary from input text
@@ -121,7 +122,9 @@ def process_case_B(input_list, date=None):
     for bullet_idx in range(len(input_list)):
         input_text = input_text + input_list[bullet_idx] + ". " # Adding period just for punctuation, can remove it later TODO
 
-    bullet_list = input_list # Return the input list of strings
+    # bullet_list = input_list # Return the input list of strings
+    appended_bullet_list = ""
+    bullet_list = appended_bullet_list for i in input_list appended_bullet.append(i, "/n")
 
     summary_report = co.summarize(
         text=input_text,
