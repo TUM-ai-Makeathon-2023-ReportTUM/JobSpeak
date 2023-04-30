@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from database import Base
+from database.database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -16,6 +16,7 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
     report_name = Column(String)
     summary = Column(String)
+    score = Column(Integer)
     date = Column(String)
     img_path = Column(String)
     user_id = Column(Integer, ForeignKey("users.id"))
