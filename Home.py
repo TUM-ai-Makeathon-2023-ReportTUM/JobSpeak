@@ -7,19 +7,23 @@ from streamlit_extras.switch_page_button import switch_page
 import base64
 import streamlit as st
 from st_clickable_images import clickable_images
+from database.db_utils import create_user
+from streamlit_extras.add_vertical_space import add_vertical_space
 
 
-# TODO add this pic
-# add_logo("gallery/kitty.jpeg", height=300)
+create_user("Bob Baumeister", "bob.baumeister@some-comp.de")
+
 
 st.set_page_config(
     page_title="Hello",
     page_icon="👋",
 )
+add_logo("static/imgs/logo2.jpg", height=300)
 
 st.write("# Welcome to JobSpeak! 👋")
 
 st.sidebar.success("Choose your role.")
+
 
 st.markdown(
     """
@@ -29,19 +33,20 @@ st.markdown(
 
 # TODO make better pictures and edit text ontop of them with photoshop, etc...
 images = []
-for file in ["static/imgs/supervisor.jpg", "static/imgs/supervisor.jpg"]:
+for file in ["static/imgs/workers.JPG", "static/imgs/supervisor.JPG"]:
     with open(file, "rb") as image:
         encoded = base64.b64encode(image.read()).decode()
         images.append(f"data:image/jpeg;base64,{encoded}")
 
 clicked = clickable_images(
     images,
-    titles=[f"Image #{str(i)}" for i in range(5)],
+    titles=["Workers", "Supervisor"],
     div_style={"display": "flex", "justify-content": "center", "flex-wrap": "wrap"},
-    img_style={"margin": "10px", "height": "300px", "border-radius": "10px"},
+    img_style={"margin": "10px", "height": "300px", "aspect-ratio": "1/1", "object-fit": "cover", "border-radius": "10px"},
 )
 
 if clicked == 0:
     switch_page("worker view")
 elif clicked == 1:
     switch_page("supervisor view")
+

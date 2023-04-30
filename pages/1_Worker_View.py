@@ -25,7 +25,10 @@ from streamlit_extras.let_it_rain import rain
 
 from ml_models.whisper_voice2text import query_hf
 from ml_models.use_llm import process_case_A, process_case_B
-# from ml_models.ocr import query_ocr
+from sys import platform
+if platform != "darwin":  # not OS X
+    from ml_models.ocr import query_ocr
+from ml_models.translate import query_translate
 
 from database.db_utils import create_report
 from PIL import Image
@@ -264,6 +267,7 @@ def show_view_camera_input():
             st.markdown('<p style="text-align: center;">Before</p>',unsafe_allow_html=True)
             st.image(image,width=300) 
         with col2:
+            result_text = ""
             with st.spinner('Running Img2Text. Please wait...'):
                 try:
                     result_text, bboxes = query_ocr(IMG_JPG_FILENAME)
@@ -326,6 +330,7 @@ def show_report_submission_elements():
                 if get_transcribed_text():
                     try:
                         results_dict = process_case_A(get_transcribed_text())
+                        summary_report = results_dict["summary_report"]
                         success = True
                     except Exception as e:
                         st.sidebar.error(f"Process A Failed: {e}.")
@@ -334,6 +339,7 @@ def show_report_submission_elements():
                     task_list = [v for k, v in get_entered_task_keys_and_text().items() if v != '']
                     try:
                         results_dict = process_case_B(task_list)
+                        summary_report = query_translate(results_dict["summary_report"], source_language="es", dest_language="en")
                         success = True
                     except Exception as e:
                         st.sidebar.error(f"Process B Failed: {e}.")
@@ -342,20 +348,21 @@ def show_report_submission_elements():
                 if success:
                     create_report(
                         report_name=get_given_report_name(),
-                        user_id="42",
-                        summary=results_dict["summary_report"],
-                        date=datetime.datetime.now().ctime(),
+                        user_id="1",        # always same
+                        summary=summary_report,
+                        date=datetime.datetime.now().strftime("%Y-%m-%d"),       # e.g. 2021-01-01
                         img_path="",
                         score=results_dict["score"],
                     )
                 
-            rain(
-                emoji="🎉",
-                font_size=54,
-                falling_speed=5,
-                animation_length=5,#"infinite",
-            )
-            set_submission_successful(True)
+                    rain(
+                        emoji="🎉",
+                        font_size=54,
+                        falling_speed=5,
+                        animation_length=5,#"infinite",
+                    )
+                    
+                    set_submission_successful(True)
             
         st.button("Submit ✅", on_click=on_click_submit, disabled=is_submission_successful())
     
