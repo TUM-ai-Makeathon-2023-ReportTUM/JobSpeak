@@ -346,6 +346,7 @@ def show_report_submission_elements():
                         summary=results_dict["summary_report"],
                         date=datetime.datetime.now().ctime(),
                         img_path="",
+                        score=results_dict["score"],
                     )
                 
             rain(
