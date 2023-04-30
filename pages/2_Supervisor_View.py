@@ -22,7 +22,12 @@ user_data = {
 # Display the data
 for name in db.get_all_users():
     # Display information
-    st.write(f'Responsible:  {name.name}')
+    unique_user = []
+    if name not in unique_user:
+        st.markdown(f'**Worker:  {name.name}**')
+        unique_user.append(name.name)
+    else:
+        continue
     
     for report in db.get_reports(name.id):
         st.write(f'Task: {report.report_name} || Id: {name.id} || Date: {report.date}')
@@ -32,5 +37,6 @@ for name in db.get_all_users():
         # print(data_dict)
 
         pdf = dict_to_pdf(data_dict)
-
-        st.download_button(label="download document", data= pdf, file_name=report.report_name)# TODO need to add a method call to generate or display the pdf
+        with open("pdfs/output.pdf", 'rb') as file:
+            contents = file.read()
+        st.download_button(label="Download Document", data = contents, file_name=report.report_name)# TODO need to add a method call to generate or display the pdf
