@@ -41,7 +41,7 @@ def dict_to_pdf(data_dict):
     period = ""
     name = data_dict['name']
     task_description = data_dict["task_desc"]
-    reason_and_solution = data_dict["task_summary"].split(" \n")
+    reason_and_solution = data_dict["task_summary"].split('\n')
     service_title = data_dict["title"]
     faith_score = data_dict["faith_score"]
 
