@@ -13,6 +13,8 @@ pip install streamlit-extras
 pip install st-clickable-images
 
 pip install SQLAlchemy
+pip install pdfkit
+pip install pypdf
 
 pip install cohere
 pip install numpy
