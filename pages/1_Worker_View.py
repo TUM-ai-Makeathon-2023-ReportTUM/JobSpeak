@@ -181,7 +181,6 @@ def show_written_input_elements():
     with col2:
         st.button("Next ✅", on_click=set_view_report_submission, disabled=next_disabled)
 
-    
 def show_speech_input_elements():
     """The edit page for speech"""
     
@@ -192,8 +191,9 @@ def show_speech_input_elements():
     add_vertical_space(SMALL_SEP_N_LINES)
     
     st.markdown("**Hints**:")
-    st.markdown("- If recording does not work the first time, press 'Stop' and then press 'Start' again.")
+    st.markdown("- If recording does not start the first time, press 'Stop' and then press 'Start' again.")
     st.markdown("- Unfortunately our Voice2text model only works with audio <30sec. and longer messages work better.")
+    st.markdown("- If you get the error 'Model ... is currently loading', wait 20sec and try again.")
     
     add_vertical_space(SMALL_SEP_N_LINES)
 
@@ -359,7 +359,7 @@ def show_report_submission_elements():
                         summary=summary_report,
                         date=datetime.datetime.now().strftime("%Y-%m-%d"),       # e.g. 2021-01-01
                         img_path="",
-                        score=results_dict["score"],
+                        score=results_dict["error"],
                     )
                 
                     rain(
