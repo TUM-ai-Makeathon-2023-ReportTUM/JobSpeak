@@ -11,6 +11,11 @@ conda activate JobSpeak
 pip install streamlit --upgrade
 pip install streamlit-extras
 pip install st-clickable-images
+
+pip install SQLAlchemy
+
+pip install cohere
+pip install numpy
 ```
 
 
