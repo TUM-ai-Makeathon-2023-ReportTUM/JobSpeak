@@ -7,7 +7,7 @@ env = Environment(
   autoescape = select_autoescape,
 )
 
-template = env.get_template("template.html")
+template = env.get_template("dict_to_pdf/template.html")
 
 
 def dict_to_pdf(data_dict):
@@ -42,7 +42,7 @@ def dict_to_pdf(data_dict):
     task_description = data_dict["task_desc"]
     reason_and_solution = data_dict["task_summary"]
     service_title = data_dict["title"]
-    faith_score = data_dict["faith"]
+    faith_score = data_dict["faith_score"]
 
     if faith_score < 3:
         faith = "G"
@@ -70,5 +70,5 @@ def dict_to_pdf(data_dict):
             task_description = task_description,
             reason_description = reason_and_solution
         )
-
-    return pdfkit.from_string(html, None) 
+    
+    return pdfkit.from_string(html, "output.pdf")

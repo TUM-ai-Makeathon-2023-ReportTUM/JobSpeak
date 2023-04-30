@@ -16,6 +16,7 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
     report_name = Column(String)
     summary = Column(String)
+    score = Column(Integer)
     date = Column(String)
     img_path = Column(String)
     user_id = Column(Integer, ForeignKey("users.id"))

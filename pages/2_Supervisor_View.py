@@ -2,11 +2,15 @@ import streamlit as st
 import time
 import numpy as np
 import pandas as pd
+import database.db_utils as db
+from dict_to_pdf.dict_to_pdf import dict_to_pdf
 
 st.set_page_config(page_title="Supervisor View", page_icon="📈")
 
 st.markdown("# Supervisor View")
 st.sidebar.header("Supervisor View")
+
+db.test_functions()
 
 # Define your data
 user_data = {
@@ -16,10 +20,17 @@ user_data = {
 }
 
 # Display the data
-for name, info in user_data.items():
+for name in db.get_all_users():
     # Display information
-    st.write(f'Task: {name} || Responsible: {info["worker"]} || Id: {info["worker-id"]} || Date: {info["date"]}')
+    st.write(f'Responsible:  {name.name}')
+    
+    for report in db.get_reports(name.id):
+        st.write(f'Task: {report.report_name} || Id: {name.id} || Date: {report.date}')
 
-    # Add a button for additional info
-    if st.button(f'Create report for {name}'):
-        print("Call some function...") # TODO need to add a method call to generate or display the pdf
+        # Add a button for additional info
+        data_dict = {'name': name.name, 'title': report.report_name, 'task_desc': report.report_name, 'task_summary': report.summary, 'faith_score': report.score}
+        # print(data_dict)
+
+        pdf = dict_to_pdf(data_dict)
+
+        st.download_button(label="download document", data= pdf, file_name=report.report_name)# TODO need to add a method call to generate or display the pdf

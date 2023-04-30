@@ -28,9 +28,9 @@ def get_user_name(user_id) -> str:
     db.close()
     return user.name
 
-def create_report(report_name, user_id, summary, date, img_path ) -> None:
+def create_report(report_name, user_id, summary, date, img_path, score ) -> None:
     db = SessionLocal()
-    new_report = Report(report_name=report_name, user_id=user_id, summary=summary, date=date, img_path=img_path)
+    new_report = Report(report_name=report_name, user_id=user_id, summary=summary, date=date, img_path=img_path, score = score)
     try:
         db.add(new_report)
         db.commit()
@@ -53,15 +53,15 @@ def get_all_users() -> List[User]:
 def test_functions():
     ## Test Functions
     # Create 3 different users
-    create_user("John Doe", "john.doe@gmail.com")
-    create_user("Jane Doe", "jane.doe)@gmail.com")
+    create_user("Bob Baumeister", "john.doe@gmail.com")
+    create_user("Dora Entdecker", "jane.doe)@gmail.com")
     create_user("John Smith", "john@gmail.com")
 
     ## Create 2 reports per user
     user_ids = [1,2,3]
     for user_id in user_ids:
-        create_report("Report1", user_id, "This is a very nice report", "2021-01-01", "img_path1")
-        create_report("Report2", user_id, "This is another very nice report", "2021-01-02", "img_path2")
+        create_report("Report1", user_id, "This is a very nice report", "2021-01-01", "img_path1", score = 1)
+        create_report("Report2", user_id, "This is another very nice report", "2021-01-02", "img_path2", score =1)
 
     ## Get all reports for a given user
     reports = get_reports(1)
