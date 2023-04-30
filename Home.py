@@ -33,7 +33,7 @@ st.markdown(
 
 # TODO make better pictures and edit text ontop of them with photoshop, etc...
 images = []
-for file in ["static/imgs/workers.JPG", "static/imgs/supervisor.JPG"]:
+for file in ["static/imgs/workers.jpg", "static/imgs/supervisor.jpg"]:
     with open(file, "rb") as image:
         encoded = base64.b64encode(image.read()).decode()
         images.append(f"data:image/jpeg;base64,{encoded}")
