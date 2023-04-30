@@ -35,6 +35,11 @@ lambda_consistency = 0.5
 lambda_faith = 0.5
 
 def process_case_A(input_text, date=None):
+
+ # Hacky way of dealing with very short input (cohere expects 250 characters minimum)
+ if len(input_text)<= 250:
+    input_text = input_text + " " * (250 - len(input_text)) 
+
  # Get bulletpoints from input text
     summary_bullets = co.summarize(
         text= input_text,

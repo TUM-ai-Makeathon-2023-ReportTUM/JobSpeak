@@ -2,6 +2,7 @@
 .idea
 .vscode
 *.wav
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
