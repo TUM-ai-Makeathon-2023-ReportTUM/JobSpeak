@@ -20,10 +20,11 @@ user_data = {
 }
 
 # Display the data
+unique_user = []
 for name in db.get_all_users():
     # Display information
-    unique_user = []
-    if name not in unique_user:
+
+    if name.name not in unique_user:
         st.markdown(f'**Worker:  {name.name}**')
         unique_user.append(name.name)
     
