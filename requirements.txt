@@ -5,3 +5,4 @@ azure
 cohere
 sqlalchemy
 pdfkit
+pypdf
