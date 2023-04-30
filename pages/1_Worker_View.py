@@ -26,8 +26,10 @@ from streamlit_extras.let_it_rain import rain
 from ml_models.whisper_voice2text import query_hf
 from ml_models.use_llm import process_case_A, process_case_B
 from sys import platform
-if platform != "darwin":  # not OS X
+try:  # not OS X
     from ml_models.ocr import query_ocr
+except ImportError:
+    print("Not working on this system")
 from ml_models.translate import query_translate
 
 from database.db_utils import create_report
@@ -190,10 +192,15 @@ def show_speech_input_elements():
     
     add_vertical_space(SMALL_SEP_N_LINES)
     
-    st.markdown("**Hints**:")
-    st.markdown("- If recording does not start the first time, press 'Stop' and then press 'Start' again.")
-    st.markdown("- Unfortunately our Voice2text model only works with audio <30sec. and longer messages work better.")
-    st.markdown("- If you get the error 'Model ... is currently loading', wait 20sec and try again.")
+    st.markdown(
+        """
+        **Hints**:
+
+        - If recording does not start the first time, press 'Stop' and then press 'Start' again.
+        - Unfortunately our Voice2text model only works with audio <30sec. and longer messages work better.
+        - If you get the error 'Model ... is currently loading', wait 20sec and try again.
+    """
+    )
     
     add_vertical_space(SMALL_SEP_N_LINES)
 
