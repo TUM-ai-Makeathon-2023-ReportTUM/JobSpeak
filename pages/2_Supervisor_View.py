@@ -4,8 +4,11 @@ import numpy as np
 import pandas as pd
 import database.db_utils as db
 from dict_to_pdf.dict_to_pdf import dict_to_pdf
+from streamlit_extras.app_logo import add_logo
+
 
 st.set_page_config(page_title="Supervisor View", page_icon="📈")
+add_logo("static/imgs/logo2.jpg", height=300)
 
 st.markdown("# Supervisor View")
 st.sidebar.header("Supervisor View")

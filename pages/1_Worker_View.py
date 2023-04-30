@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import streamlit as st
 import wave
 import datetime
+from streamlit_extras.app_logo import add_logo
 
 # from 
 # https://github.com/Joooohan/audio-recorder-streamlit
@@ -353,7 +354,8 @@ def show_report_submission_elements():
                     task_list = [v for k, v in get_entered_task_keys_and_text().items() if v != '']
                     try:
                         results_dict = process_case_B(task_list)
-                        summary_report = query_translate(results_dict["summary_report"], source_language="es", dest_language="en")
+                        # summary_report = query_translate(results_dict["summary_report"], source_language="es", dest_language="en")
+                        summary_report = results_dict["summary_report"]
                         success = True
                     except Exception as e:
                         st.sidebar.error(f"Process B Failed: {e}.")
@@ -388,6 +390,8 @@ def show_report_submission_elements():
 
 # Page Setup
 st.set_page_config(page_title="Worker View", page_icon="👷")
+add_logo("static/imgs/logo2.jpg", height=300)
+
 st.sidebar.header("Worker View")
 st.markdown("# Worker View")
 
