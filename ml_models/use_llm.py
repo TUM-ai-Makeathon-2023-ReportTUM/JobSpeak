@@ -128,7 +128,7 @@ def process_case_B(input_list, date=None):
 
     # Returning the appended bulletpoints as a long string
     bullet_list = ""
-    for i in len(input_list):
+    for i in range(len(input_list)):
        bullet_list = bullet_list + input_list[i] + "\n " 
 
     summary_report = co.summarize(
