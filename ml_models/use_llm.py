@@ -119,12 +119,17 @@ def process_case_B(input_list, date=None):
     # Convert list of strings to a paragraph
     input_text = ""
 
+    # Really hacky stuff
+    if len(input_text)<= 250:
+        input_text = input_text + " " * (250 - len(input_text)) 
+
     for bullet_idx in range(len(input_list)):
         input_text = input_text + input_list[bullet_idx] + ". " # Adding period just for punctuation, can remove it later TODO
 
-    # bullet_list = input_list # Return the input list of strings
-    appended_bullet_list = ""
-    bullet_list = appended_bullet_list for i in input_list appended_bullet.append(i, "/n")
+    # Returning the appended bulletpoints as a long string
+    bullet_list = ""
+    for i in len(input_list):
+       bullet_list = bullet_list + input_list[i] + "\n " 
 
     summary_report = co.summarize(
         text=input_text,
